@@ -26,7 +26,7 @@ public void onLowMemory()//重写onLowMemory方法,在里面清除Tuke的内�
   Tuke.init(String, String) |  初始化 | 数据库名称，数据库路径 
   Tuke.SetException(Tuke.OnException) | 异常处理 | Tuke.OnException 
   Tuke.write(Boolean, String, T) | 写操作 | 是否存入内存 key值 数据  
-  Tuke.putAsync(Boolean, String, Int, Tuke.Callback) | 异步写操作 | 是否存入内存 key值 数据 Tuke.Callback 
+  Tuke.putAsync(Boolean, String, T, Tuke.Callback) | 异步写操作 | 是否存入内存 key值 数据 Tuke.Callback 
   Tuke.get(Boolean, String) | 读操作 | 是否存入内存 key值 
   Tuke.get(Boolean, String, T) | 读操作 | 是否存入内存 key值 默认返回值 
   Tuke.getBitmap(Boolean, String, Bitmap) | Bitmap 专用读 | 是否存入内存 key值 默认返回值 
