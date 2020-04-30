@@ -1,6 +1,8 @@
-
 # Tuke-Sp替代方案
-## 简单使用
+## 更新需知
+```
+TUKE去掉了内存缓存，这东西没实际作用。修正了一些写法，也修复了一些bug。
+```
 ### 权限
 ```
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -9,28 +11,24 @@
 ```
 File file = new File(Environment.getExternalStorageDirectory().toString() );
 Tuke.init("数据库名",file.toString());//初始化Tuke
+或者
+Tuke.init(Context);
+此时数据被放到应用私有目录，数据库名为TUKE
 ```
-### 内存占用解决方案
+### 删除数据库
 ```
-@Override
-public void onLowMemory()//重写onLowMemory方法,在里面清除Tuke的内存
-{
-	Tuke.clearMemory();
-	Tuke.clearMemory("key");//清除指定key的内存储存
-	super.onLowMemory();
-}
+Tuke.clearDisk(key);//删除单个key
+Tuke.clearDisk();//删除所有数据
 ```
 ## 代码介绍
 方法名 | 作用 | 参数
 ---|---|---
-  Tuke.init(String, String) |  初始化 | 数据库名称，数据库路径 
-  Tuke.SetException(Tuke.OnException) | 异常处理 | Tuke.OnException 
-  Tuke.write(Boolean, String, T) | 写操作 | 是否存入内存 key值 数据  
-  Tuke.putAsync(Boolean, String, T, Tuke.Callback) | 异步写操作 | 是否存入内存 key值 数据 Tuke.Callback 
-  Tuke.get(Boolean, String) | 读操作 | 是否存入内存 key值 
-  Tuke.get(Boolean, String, T) | 读操作 | 是否存入内存 key值 默认返回值 
-  Tuke.getBitmap(Boolean, String, Bitmap) | Bitmap 专用读 | 是否存入内存 key值 默认返回值 
-  Tuke.write(Boolean, String, Bitmap) | Bitmap 专用写 | 是否存入内存 key值 bitmap数据 
-  Tuke.clearMemory() | 清除内存 | 无参数 
+  Tuke.setException(Tuke.OnException) | 异常处理 | Tuke.OnException 
+  Tuke.write(String,T) | 写操作 | key值 数据  
+  Tuke.putBitmapAsync(String,Bitmap,Tuke.Callback) | 异步写位图操作 |数据 Tuke.Callback 
+  Tuke.get(String) | 读操作 | key值 
+  Tuke.get(String, T) | 读操作 |  key值 默认返回值 
+  Tuke.getBitmap(String, Bitmap) | Bitmap 专用读 | key值 默认返回值 
+  Tuke.write(String, Bitmap) | Bitmap 专用写 | key值 位图
   Tuke.clearDisk(String) | 清除磁盘 | key值 
-  Tuke.clearMemory(String) | 清除内存 | key值 
+  Tuke.clearDisk() | 删库 | 无参数

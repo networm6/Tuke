@@ -9,14 +9,17 @@ import java.io.ObjectInputStream;
 import android.graphics.Bitmap;
 import java.io.FileNotFoundException;
 import android.graphics.BitmapFactory;
+import android.content.Context;
 
 public class DiskCache {
+	File mfile;
 	public DiskCache(String name,String mpath) {
 		path=mpath;basename=name;
-		File database=new File(mpath+File.separator+name);
-		if(!database.exists())
-		database.mkdirs();
+		 mfile=new File(mpath+File.separator+name);
+		if(!mfile.exists())
+		mfile.mkdirs();
 	}
+	
 	private String basename;
 	private String path;
 	private  File file(String a) throws IOException{
@@ -63,4 +66,18 @@ public class DiskCache {
 		if(f.exists())
 		f.delete();
 	}
+	public  void delete() {
+		if(mfile.exists())
+	  deleteFiles(mfile);
+	}
+	private  void deleteFiles(File file){
+        for (File f: file.listFiles()){
+            if (f.isDirectory())
+                deleteFiles(f);
+            else 
+                f.delete();
+        }
+        file.delete();
+    }
+	
 }

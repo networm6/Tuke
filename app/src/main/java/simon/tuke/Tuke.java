@@ -6,124 +6,129 @@ import java.io.Serializable;
 import javax.security.auth.callback.Callback;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.content.Context;
+import android.view.ViewStub;
 
-public class Tuke {
+public class Tuke
+{
 
-private static DiskCache disk;
-private static MemoryCache memory;
-private static OnException error;
-    public static void init(String name, String path){
+	private static DiskCache disk;
+	
+	private static OnException error;
+	
+	public static void init(Context in)
+	{
+		init("TUKE", in.getNoBackupFilesDir().toString());
+	}
+
+    public static void init(String name, String path)
+	{
 		disk = new DiskCache(name, path);
-		memory = new MemoryCache();
 	}
-	public static void SetException(OnException in){
-		error=in;
+	public static void setException(OnException in)
+	{
+		error = in;
 	}
-	public static <T extends Serializable> void write(boolean ismemory,String key,T in) {
-		key=keytonew(key);
-		try{
-		disk.write(key,in);
-		if(ismemory)
-		memory.put(key,in);
-		}catch(IOException e){
-			if(error!=null)
-			error.error(e);
-		}
-	}
+	
 
-	public static void write(boolean ismemory,String key,Bitmap bit){
-		key=keytonew(key);
+	private static String keytonew(String key)
+	{
+		return key.replaceAll(File.separator, "|");
+	}
+	
+
+	public static <T extends Serializable> void write(String key, T  in)
+	{
+		key = keytonew(key);
 		try
 		{
-			disk.saveBitmap(key, bit);
-			if(ismemory)
-			memory.put(key,bit);
+			disk.write(key, in);
 		}
 		catch (IOException e)
 		{
-			error.error(e);
+			if (error != null)
+				error.onIOError(e);
 		}
-		memory.put(key,bit);
 	}
-	public static Bitmap getBitmap(boolean ismemory,String key,Bitmap def){
-		key=keytonew(key);
-		Bitmap a= memory.get(key);
-		if(a!=null)
-			return a;
-		else{
-			Bitmap b=disk.getBitmap(key);
-			if(b==null)
+	
+	public static void write( String key, Bitmap bit)
+	{
+		key = keytonew(key);
+		try
+		{
+			disk.saveBitmap(key, bit);
+		}
+		catch (IOException e)
+		{
+			if (error != null)
+				error.onIOError(e);
+		}
+
+	}
+	
+	public static Bitmap getBitmap(String key, Bitmap def)
+	{
+		key = keytonew(key);
+		Bitmap a=disk.getBitmap(key);
+			if (a== null)
 				return def;
-			else{
-				if(ismemory)
-				memory.put(key,b);
-				return b;
-			}
-		}
+				return a;
 	}
-	private static String keytonew(String key){
-		return key.replaceAll(File.separator,"|");
-	}
-	public static <T extends Serializable> T get(boolean ismemory,String key,T def)  {
+	public static <T extends Serializable> T get(String key)  {
+   return get(key,null);
+     }
+	public static <T extends Serializable> T get(String key,T def)  {
 		try{
 			String mkey=keytonew(key);
-		T a=memory.get(mkey);
-		
-		if(a!=null)
-			return a;
-		else{
-			T b=disk.get(mkey);
-			if(b!=null){
-				if(ismemory)
-				memory.put(mkey,b);
-				return b;
-			}else
-				return def;
-		}
+				T b=disk.get(mkey);
+				if(b!=null)
+					return b;
 		}catch(IOException e){
 			if(error!=null)
-				error.error(e);
-		return def;
+				error.onIOError(e);
 		}catch(ClassNotFoundException e){
-			if(error!=null)
-				error.error(e);
-		return def;
+            if(error!=null)
+				error.onClassNFError(e);
 		}
+		return def;
 	}
-	public static <T extends Serializable> T get(boolean ismemory,String key) {
-		return get(ismemory,key,null);
-	}
-	public static void clearMemory(){
-		memory.removeAll();
-	}
-	public static void clearMemory(String key){
-		key=keytonew(key);
-		memory.delete(key);
-	}
-	public static void clearDisk(String key){
-		key=keytonew(key);
+	
+	public static void clearDisk(String key)
+	{
+		key = keytonew(key);
 		disk.delete(key);
 	}
-	public interface Callback {
+	public static void clearDisk()
+	{
+		disk.delete();
+	}
+	public interface Callback
+	{
         void apply();
     }
-	public interface OnException<T extends java.lang.Exception>{
-		void error(T e);
+	public interface OnException
+	{
+		void onIOError(IOException e);
+        void onClassNFError(ClassNotFoundException e);
 	}
-	public static <T extends Serializable> void putAsync(final boolean ismemory,final String key, final T value, final Callback callback) {
+	
+	public static  void putBitmapAsync( final String key, final Bitmap value, final Callback callback)
+	{
         new AsyncTask<Void, Integer, Boolean>() {
             @Override
-            protected Boolean doInBackground(Void... params)  {
-                Tuke.write(ismemory,key,value);
+            protected Boolean doInBackground(Void... params)
+			{
+                Tuke.write(key, value);
                 return true;
             }
 
             @Override
-            protected void onPostExecute(Boolean success) {
+            protected void onPostExecute(Boolean success)
+			{
                 super.onPreExecute();
-                if (callback != null) {
-                    callback.apply();
-                }
+                if (callback != null)
+				 callback.apply();
+                
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
