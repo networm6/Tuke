@@ -28,13 +28,21 @@ Tuke 是基于 ObjectStream的 key-value 存储组件，稳定性强，使用方
 
 ### 安装引入
 
-推荐使用 Maven：
-
-```groovy
-dependencies {
-    implementation 'simon.tuke:tuke:2.0.0'
-    // replace "2.0.0" with any available version
-}
+Step 1. Add the JitPack repository to your build file
+Add it in your root build.gradle at the end of repositories:
+```grovey
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+Step 2. Add the dependency
+```grovey
+	dependencies {
+	        implementation 'com.gitee.simon9102:tuke:1.0.0'
+	}
 ```
 
 ### 快速上手
@@ -89,14 +97,6 @@ tuke.removeAll();
 
 #### 用法1：使用TukeKtx组件，以通过代理变量实现自动储存读取
 
-先引入
-
-```groovy
-dependencies {
-    implementation 'simon.tuke:tukeKtx:1.0.0'
-    // replace "1.0.0" with any available version
-}
-```
 
 使用
 
