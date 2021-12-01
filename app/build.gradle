@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.networm6'// huangxiaoguo1代表你github名字
-
+group='com.github.networm6'
 
 
 android {
